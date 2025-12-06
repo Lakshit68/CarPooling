@@ -1,5 +1,11 @@
 import express from "express"
 import dotenv from "dotenv"
+dotenv.config()
+
+console.log('Environment variables loaded:')
+console.log('MONGO:', process.env.MONGO)
+console.log('ORIGIN:', process.env.ORIGIN)
+console.log('SERVER:', process.env.SERVER)
 import mongoose from "mongoose"
 import cors from "cors"
 import cookieParser from "cookie-parser"
@@ -13,8 +19,6 @@ import { fileURLToPath } from "url"
 
 const app = express()
 const PORT = 8080;
-
-dotenv.config()
 
 const connectDB = (url) => {
   mongoose.set("strictQuery", true);

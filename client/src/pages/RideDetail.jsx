@@ -204,7 +204,7 @@ const RideDetail = () => {
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button 
-                        className="w-full sm:w-64 py-6 text-lg pulse-button animate-pulseGlow cursor-pointer"
+                        className="w-full sm:w-64 py-6 bg-blue-300 text-lg pulse-button animate-pulseGlow cursor-pointer"
                         disabled={bookingStatus.status === 'loading'}
                       >
                         {bookingStatus.status === 'loading' ? 'Processing...' : 'Book Ride'}

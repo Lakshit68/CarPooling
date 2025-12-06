@@ -8,7 +8,7 @@ import { Button } from "./ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { MapPin, Clock, Calendar, IndianRupee, Plus, Minus, CheckCircle, AlertCircle } from 'lucide-react';
+import { MapPin, Clock, Calendar, IndianRupee, Plus, Minus, CheckCircle, AlertCircle, Car } from 'lucide-react';
 import { useState, useEffect } from "react";
 import { Toaster, toast } from "sonner";
 import axios from "axios";
@@ -21,6 +21,9 @@ const formSchema = z.object({
   startTime: z.date().min(new Date(), "Start time must be in the future"),
   endTime: z.date().min(new Date(), "End time must be in the future"),
   price: z.number().min(0, "Price must be a positive number"),
+  vehicleModel: z.string().min(1, "Vehicle model is required"),
+  vehicleNumber: z.string().min(1, "Vehicle number is required"),
+  vehicleColor: z.string().min(1, "Vehicle color is required"),
 });
 
 const PublishCard = () => {
@@ -50,6 +53,9 @@ const PublishCard = () => {
       startTime: new Date(),
       endTime: new Date(),
       price: 0,
+      vehicleModel: "",
+      vehicleNumber: "",
+      vehicleColor: "",
     },
   });
 
@@ -67,6 +73,11 @@ const PublishCard = () => {
         startTime: data.startTime.toISOString(),
         endTime: data.endTime.toISOString(),
         price: data.price,
+        vehicleDetails: {
+          model: data.vehicleModel,
+          vehicleNumber: data.vehicleNumber,
+          color: data.vehicleColor,
+        },
       };
 
       await axios.post(`${apiUri}/rides`, body, { withCredentials: true });
@@ -217,6 +228,79 @@ const PublishCard = () => {
               </FormItem>
             )}
           />
+
+          {/* Vehicle Details Section */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 mb-4">
+              <Car className="h-5 w-5 text-[hsl(var(--primary-blue))]" />
+              <h3 className="font-semibold text-lg">Vehicle Details</h3>
+            </div>
+            
+            <div className="grid grid-cols-1 gap-4">
+              <FormField
+                control={form.control}
+                name="vehicleModel"
+                render={({ field }) => (
+                  <FormItem className="form-item">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Car className="h-4 w-4 text-[hsl(var(--accent-teal))]" />
+                      <FormLabel className="font-medium">Vehicle Model</FormLabel>
+                    </div>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g., BMW X5, Honda City, Swift Dzire"
+                        {...field}
+                        className="border-[hsl(var(--accent-teal),0.3)]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="vehicleNumber"
+                  render={({ field }) => (
+                    <FormItem className="form-item">
+                      <div className="flex items-center gap-2 mb-2">
+                        <FormLabel className="font-medium text-sm">Vehicle Number</FormLabel>
+                      </div>
+                      <FormControl>
+                        <Input
+                          placeholder="e.g., MH-12-AB-1234"
+                          {...field}
+                          className="border-[hsl(var(--accent-teal),0.3)]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="vehicleColor"
+                  render={({ field }) => (
+                    <FormItem className="form-item">
+                      <div className="flex items-center gap-2 mb-2">
+                        <FormLabel className="font-medium text-sm">Color</FormLabel>
+                      </div>
+                      <FormControl>
+                        <Input
+                          placeholder="e.g., Black, White, Red"
+                          {...field}
+                          className="border-[hsl(var(--accent-teal),0.3)]"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+          </div>
 
           {/* Seats and Price */}
           <div className="grid grid-cols-2 gap-4">

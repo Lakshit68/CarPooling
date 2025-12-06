@@ -9,12 +9,12 @@ import { z } from 'zod';
 import { useSearchParams } from 'react-router-dom';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
-import { CalendarIcon, MapPin, Minus, Plus, User } from 'lucide-react';
-import { Input } from './ui/input';
+import { CalendarIcon, Minus, Plus, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { Button } from './ui/button';
 import { Calendar } from './ui/calendar';
+import Autocomplete from './Autocomplete';
 
 // Schema with required date and seat
 const searchSchema = z.object({
@@ -79,13 +79,13 @@ const Search = () => {
             control={form.control}
             name="from"
             render={({ field }) => (
-              <FormItem className="flex items-center space-y-0">
-                <MapPin className="opacity-50" />
+              <FormItem className="flex items-center space-y-0 flex-1">
                 <FormControl>
-                  <Input
+                  <Autocomplete
+                    value={field.value}
+                    onChange={field.onChange}
                     placeholder="From"
-                    className="focus-visible:ring-0 md:text-base focus-visible:ring-transparent focus-visible:ring-offset-0 border-none px-1"
-                    {...field}
+                    iconClassName="mr-2"
                   />
                 </FormControl>
                 {form.formState.errors.from && (
@@ -103,13 +103,13 @@ const Search = () => {
             control={form.control}
             name="to"
             render={({ field }) => (
-              <FormItem className="flex items-center space-y-0">
-                <MapPin className="opacity-50 sm:ml-2" />
+              <FormItem className="flex items-center space-y-0 flex-1">
                 <FormControl>
-                  <Input
+                  <Autocomplete
+                    value={field.value}
+                    onChange={field.onChange}
                     placeholder="To"
-                    className="focus-visible:ring-0 md:text-base focus-visible:ring-transparent focus-visible:ring-offset-0 border-none px-1"
-                    {...field}
+                    iconClassName="sm:ml-2 mr-2"
                   />
                 </FormControl>
                 {form.formState.errors.to && (

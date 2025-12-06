@@ -1,7 +1,7 @@
 
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./ui/card"
-import { Dialog, DialogContent, DialogTrigger } from "./ui/dialog"
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "./ui/dialog"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
 import { Button } from "./ui/button"
@@ -87,6 +87,10 @@ const LoginSignupDialog = ({
         </DialogTrigger>
       )}
       <DialogContent className="border-2 border-gray-200 rounded-xl p-6 bg-white shadow-xl max-w-md">
+        <DialogTitle className="sr-only">Login or Sign Up</DialogTitle>
+        <DialogDescription className="sr-only">
+          Sign in to your account or create a new account to start using the carpooling service
+        </DialogDescription>
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2 mb-6 gap-2 bg-gray-100 p-1 rounded-lg">
             <TabsTrigger
