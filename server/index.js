@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 dotenv.config()
 
 console.log('Environment variables loaded:')
-console.log('MONGO:', process.env.MONGO)
+console.log('MONGO:', process.env.MONGO_URI)
 console.log('ORIGIN:', process.env.ORIGIN)
 console.log('SERVER:', process.env.SERVER)
 import mongoose from "mongoose"
@@ -21,14 +21,19 @@ import { fileURLToPath } from "url"
 const app = express()
 const PORT = 8080;
 
-const connectDB = (url) => {
-  mongoose.set("strictQuery", true);
+const connectDB = async () => {
+  try {
+    mongoose.set("strictQuery", true);
 
-  mongoose
-    .connect(process.env.MONGO)
-    .then(() => console.log("Database connected"))
-    .catch((error) => console.log(error));
+    await mongoose.connect(process.env.MONGO_URI);
+
+    console.log("✅ MongoDB Connected Successfully");
+  } catch (error) {
+    console.error("❌ MongoDB Connection Error:", error.message);
+    process.exit(1);
+  }
 };
+
 
 
 //middlewares
@@ -38,7 +43,8 @@ const allowedOrigins = [
   process.env.ORIGIN,
   'http://localhost:5173',
   'http://localhost:5174',
-  'https://car-pooling-mwly.vercel.app'
+  'https://car-pooling-mwly.vercel.app',
+  'http://localhost:3000' // Additional local development port
 ].filter(Boolean);
 
 app.use(cors({
@@ -173,7 +179,8 @@ app.post("/upload", upload.single('product'), (req, res) => {
 // const __dirname = path.dirname(__filename);
 // app.use('temp/my-upload', express.static(path.join(__dirname, 'temp/my-upload')));
 
-app.listen(PORT, () => {
-  connectDB()
-  console.log(`Connected to backend on PORT: ${PORT}`)
-})
+connectDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`✅ Backend running on PORT: ${PORT}`);
+  });
+});
