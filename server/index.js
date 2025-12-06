@@ -33,17 +33,47 @@ const connectDB = (url) => {
 
 //middlewares
 
+// Enhanced CORS configuration
+const allowedOrigins = [
+  process.env.ORIGIN,
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'https://car-pooling-mwly.vercel.app'
+].filter(Boolean);
 
 app.use(cors({
-  origin: process.env.ORIGIN,  // Set specific frontend origin
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true, // Allow credentials (cookies, authentication headers)
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"], // Allowed HTTP methods
   allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
 }));
 
 
 app.use(cookieParser())
 app.use(express.json())
+
+// Handle pre-flight requests
+app.options('*', (req, res) => {
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+  }
+  res.sendStatus(200);
+});
 
 app.use("/api/users", userRoute);
 app.use("/api/auth", authRoute);
@@ -53,9 +83,20 @@ app.use("/api/rides", rideRoute);
 app.use((err, req, res, next)=>{
   const errorStatus = err.status || 500;
   const errorMessage = err.message || "Something went wrong";
+  
+  // Log CORS errors specifically
+  if (err.message === 'Not allowed by CORS') {
+    console.error('CORS Error - Origin not allowed:', req.headers.origin);
+    return res.status(403).json({
+      success: false,
+      status: 403,
+      error: "CORS policy violation"
+    });
+  }
+  
   return res.status(errorStatus).json({
     success: false,
-    status: err.status,
+    status: errorStatus,
     error: errorMessage
   })
 })
